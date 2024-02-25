@@ -29,7 +29,8 @@ Kevin
 module Awards (findallawards) where
 
 import QSort
-import Data.List((\\))
+import qualified Data.List as DL 
+import MyLib((\\))
 import System.Environment
 import Control.Monad
 
@@ -55,14 +56,6 @@ findawards scores | null theawards = []
 -- (Name, list of scores)
 findallawards competitors =
 	map (\ (name,scores) -> (name,findawards scores)) competitors
-
-
-competitors i =
-  [ ("Simon",[35,27,40,i,34,21])
-  , ("Hans",[23,19,45,i,17,10,5,8,14])
-  , ("Phil",[1,18,i,20,21,19,34,8,16,21])
-  , ("Kevin",[9,23,17,54,i,41,9,18,14])
-  ]
 
 
 -- main :: IO ()

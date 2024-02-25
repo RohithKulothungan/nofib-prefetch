@@ -58,7 +58,7 @@ library
     import:           warnings
 
     -- Modules exported by the library.
-    exposed-modules:  MyLib, Awards, QSort
+    exposed-modules:  MyLib, Awards, QSort, Banner, Calendar, Key, Auxil, Prog, Circsim, Constraints, Cryptarithm2, Dom, Expert, Result, Search, Table, Knowledge, Match, Mate, Move, Board, Problem, Solution, Sort, Numbers, Vectors, Hide, EdgePlate, Postscript, MyIO, NofibUtils, Comparing, Cross, Geometric, Matrices, Memo, Preds, Rotate, Solve, InferMain, Environment, FiniteMap, Infer, InferMonad, MaybeM, MyList, Parse, Shows, StateX, Substitution, Term, Type, ParseProlog, PrologMain, Engine, Interact, PrologData, PureEngine, StackEngine, Subst, Version, MyRandom, IntLib, Prime, PrimeMain
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -67,7 +67,7 @@ library
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:  base ^>=4.17.2.1, criterion
+    build-depends:  base ^>=4.17.2.1, criterion, deepseq, transformers, containers, array, criterion-measurement
 
     -- Directories containing source files.
     hs-source-dirs:   lib
@@ -91,7 +91,7 @@ executable nofib-prefetch
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.17.2.1,
-        nofib-prefetch, criterion, nofib-prefetch
+        nofib-prefetch, criterion, deepseq, transformers, criterion-measurement
 
     -- Directories containing source files.
     hs-source-dirs:   app
@@ -124,11 +124,11 @@ test-suite nofib-prefetch-test
     -- Test dependencies.
     build-depends:
         base ^>=4.17.2.1,
-        nofib-prefetch, criterion
+        nofib-prefetch, criterion, deepseq, transformers, criterion-measurement
 
 benchmark my-benchmark
   type:                  exitcode-stdio-1.0
   main-is:               Main.hs
   hs-source-dirs:        app
-  build-depends:         base, criterion, nofib-prefetch
+  build-depends:         base, criterion, nofib-prefetch, deepseq, transformers, criterion-measurement
   default-language:      Haskell2010

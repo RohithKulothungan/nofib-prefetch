@@ -30,6 +30,26 @@
   (major1) == 1 && (major2) <  6 || \
   (major1) == 1 && (major2) == 6 && (minor) <= 3)
 #endif /* MIN_VERSION_criterion */
+/* package criterion-measurement-0.2.1.0 */
+#ifndef VERSION_criterion_measurement
+#define VERSION_criterion_measurement "0.2.1.0"
+#endif /* VERSION_criterion_measurement */
+#ifndef MIN_VERSION_criterion_measurement
+#define MIN_VERSION_criterion_measurement(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  2 || \
+  (major1) == 0 && (major2) == 2 && (minor) <= 1)
+#endif /* MIN_VERSION_criterion_measurement */
+/* package deepseq-1.4.8.0 */
+#ifndef VERSION_deepseq
+#define VERSION_deepseq "1.4.8.0"
+#endif /* VERSION_deepseq */
+#ifndef MIN_VERSION_deepseq
+#define MIN_VERSION_deepseq(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  4 || \
+  (major1) == 1 && (major2) == 4 && (minor) <= 8)
+#endif /* MIN_VERSION_deepseq */
 /* package nofib-prefetch-0.1.0.0 */
 #ifndef VERSION_nofib_prefetch
 #define VERSION_nofib_prefetch "0.1.0.0"
@@ -40,6 +60,16 @@
   (major1) == 0 && (major2) <  1 || \
   (major1) == 0 && (major2) == 1 && (minor) <= 0)
 #endif /* MIN_VERSION_nofib_prefetch */
+/* package transformers-0.5.6.2 */
+#ifndef VERSION_transformers
+#define VERSION_transformers "0.5.6.2"
+#endif /* VERSION_transformers */
+#ifndef MIN_VERSION_transformers
+#define MIN_VERSION_transformers(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  5 || \
+  (major1) == 0 && (major2) == 5 && (minor) <= 6)
+#endif /* MIN_VERSION_transformers */
 
 /* tool gcc-14.0.6 */
 #ifndef TOOL_VERSION_gcc
