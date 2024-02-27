@@ -4,7 +4,8 @@
 
 module Calendar (calendar, cal) where
 import System.IO
-import Data.List
+import MyLib
+import qualified Data.List as DL --1.3
 import Data.Char
 
 import System.Environment
@@ -19,16 +20,16 @@ infixr 5 `above`, `beside`
 type Picture   =  [[Char]]
 
 height, width :: Picture -> Int
-height p       = length p
-width  p       = length (head p)
+height p       = MyLib.length p
+width  p       = MyLib.length (MyLib.head p)
 
 above, beside :: Picture -> Picture -> Picture
 above          = (++)
-beside         = zipWith (++)
+beside         = MyLib.zipWith (++)
 
 stack, spread :: [Picture] -> Picture
-stack          = foldr1 above
-spread         = foldr1 beside
+stack          = MyLib.foldr1 above
+spread         = MyLib.foldr1 beside
 
 emptyPic      :: (Int,Int) -> Picture
 emptyPic (h,w) = copy h (copy w ' ')
@@ -39,7 +40,7 @@ blockT n       = spread . map stack . groop n
 
 groop         :: Int -> [a] -> [[a]]
 groop n []     = []
-groop n xs     = take n xs : groop n (drop n xs)
+groop n xs     = MyLib.take n xs : groop n (MyLib.drop n xs)
 
 lframe        :: (Int,Int) -> Picture -> Picture
 lframe (m,n) p = (p `beside` emptyPic (h,n-w)) `above` emptyPic (m-h,n)
@@ -62,9 +63,9 @@ monthNames        = ["January","February","March","April",
 jan1st year       = (year + last`div`4 - last`div`100 + last`div`400) `mod` 7
                     where last = year - 1
 
-firstDays year    = take 12
+firstDays year    = MyLib.take 12
                          (map (`mod`7)
-                              (scanl (+) (jan1st year) (monthLengths year)))
+                              (MyLib.scanl (+) (jan1st year) (monthLengths year)))
 
 -- Producing the information necessary for one month:
 
@@ -75,7 +76,7 @@ dates fd ml = map (date ml) [1-fd..42-fd]
 -- The original B+W calendar:
 
 calendar :: Int -> String
-calendar  = unlines . block 3 . map picture . months
+calendar  = MyLib.unlines . block 3 . map picture . months
             where picture (mn,yr,fd,ml)  = title mn yr `above` table fd ml
                   title mn yr    = lframe (2,25) [mn ++ " " ++ show yr]
                   table fd ml    = lframe (8,25)
@@ -89,7 +90,7 @@ calendar  = unlines . block 3 . map picture . months
 
 -- In a format somewhat closer to UNIX cal:
 
-cal year = unlines (banner year `above` body year)
+cal year = MyLib.unlines (banner year `above` body year)
            where banner yr      = [cjustify 75 (show yr)] `above` emptyPic (1,75)
                  body           = block 3 . map (pad . pic) . months
                  pic (mn,fd,ml) = title mn `above` table fd ml
@@ -100,21 +101,21 @@ cal year = unlines (banner year `above` body year)
                  table fd ml    = daynames `above` entries fd ml
                  daynames       = [" Su Mo Tu We Th Fr Sa"]
                  entries fd ml  = block 7 (dates fd ml)
-                 months year    = zip3 monthNames
+                 months year    = MyLib.zip3 monthNames
                                        (firstDays year)
                                        (monthLengths year)
 
 -- For a standalone calendar program:
 
-calFor year i = print (length (cal yr))
+calFor year i = print (MyLib.length (cal yr))
 			  -- SDM: changed to print the length, otherwise
 			  -- stdout file is too huge.
-                where illFormed = null ds || not (null rs)
-                      (ds,rs)   = span isDigit year
+                where illFormed = MyLib.null ds || not (MyLib.null rs)
+                      (ds,rs)   = MyLib.span isDigit year
                       -- offset yr by the input parameter, so that this isn't
                       -- turned into a CAF
                       yr        = atoi ds + i
-                      atoi s    = foldl (\a d -> 10*a+d) 0 (map toDigit s)
+                      atoi s    = MyLib.foldl (\a d -> 10*a+d) 0 (map toDigit s)
                       toDigit d = fromEnum d - fromEnum '0'
 
 
@@ -122,15 +123,15 @@ calFor year i = print (length (cal yr))
 
 -- tacked on by partain
 copy    :: Int -> a -> [a]
-copy n x = take n (repeat x)
+copy n x = MyLib.take n (MyLib.repeat x)
 
 cjustify, ljustify, rjustify :: Int -> String -> String
 
 cjustify n s = space halfm ++ s ++ space (m - halfm)
-               where m     = n - length s
+               where m     = n - MyLib.length s
                      halfm = m `div` 2
-ljustify n s = s ++ space (n - length s)
-rjustify n s = space (n - length s) ++ s
+ljustify n s = s ++ space (n - MyLib.length s)
+rjustify n s = space (n - MyLib.length s) ++ s
 
 space       :: Int -> String
 space n      = copy n ' '

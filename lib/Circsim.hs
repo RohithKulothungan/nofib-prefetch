@@ -32,7 +32,8 @@ David and John O'D.
 
 module Circsim (benchmarkForCircuitSimulator) where
  import System.Environment
- import Data.List
+ import MyLib
+ import qualified Data.List as DL --1.3
  import Criterion
  import GHC.Generics
  import Control.DeepSeq
@@ -48,7 +49,7 @@ module Circsim (benchmarkForCircuitSimulator) where
  put [x] = Cell x
  put xs  = Node () (put fstHalf) (put sndHalf)
 	where
-	  (fstHalf, sndHalf) = splitAt (length xs `div` 2) xs
+	  (fstHalf, sndHalf) = MyLib.splitAt (MyLib.length xs `div` 2) xs
 
 -- The function get takes a tree and returns a list of the cells, so
 -- we have the identity	(get . put) xs == xs
@@ -231,7 +232,7 @@ module Circsim (benchmarkForCircuitSimulator) where
 
  pad_circuit :: Signal a => Circuit a -> Circuit a
  pad_circuit (size, ins, outs, states)
-	= (p2, ins, outs, take p2 (states ++ repeat emptyState))
+	= (p2, ins, outs, MyLib.take p2 (states ++ MyLib.repeat emptyState))
      where
 	p2 = nearest_power_of_two size
 
@@ -361,12 +362,12 @@ module Circsim (benchmarkForCircuitSimulator) where
  collect_outputs (size, ins, outs, states) = map get_output outs
     where
 	get_output (label, p)
-		 = third (head [ head (inports s) | s<-states, p==pid s])
+		 = third (MyLib.head [ MyLib.head (inports s) | s<-states, p==pid s])
 	third (_,_,v) = v
 
  simulate :: Signal a => [[a]] -> Circuit a -> [Circuit a]
  simulate inputs_list circuit@(size, ins, outs, states)
-	= tail (scanl (do_cycle cpd) circuit' inputs_list)
+	= MyLib.tail (MyLib.scanl (do_cycle cpd) circuit' inputs_list)
      where
 	circuit' = (size, ins, outs, map init_dffs states)
 	cpd = critical_path_depth circuit
@@ -379,9 +380,9 @@ module Circsim (benchmarkForCircuitSimulator) where
  do_cycle :: Signal a => Int -> Circuit a -> [a] -> Circuit a
  do_cycle cpd (size, ins, outs, states) inputs = (size, ins, outs, states4)
      where
-	states1 = map (store_inputs (zip ins inputs)) states
+	states1 = map (store_inputs (MyLib.zip ins inputs)) states
 	states2 = do_sends 0 states1
-	states3 = foldl sim_then_send states2 [1..cpd]
+	states3 = MyLib.foldl sim_then_send states2 [1..cpd]
 	sim_then_send state d = do_sends d (simulate_components d state)
 	states4 = restore_requests states states3
 
@@ -391,9 +392,9 @@ module Circsim (benchmarkForCircuitSimulator) where
 
  restore_requests :: Signal a => [State a] -> [State a] -> [State a]
  restore_requests old_states new_states
-		= zipWith restore old_states new_states
+		= MyLib.zipWith restore old_states new_states
       where
-	restore os ns = ns { outports = zipWith restore_outport (outports os)
+	restore os ns = ns { outports = MyLib.zipWith restore_outport (outports os)
 						    (outports ns) }
 	restore_outport (p,_,ql,dl,qr,dq) (_,m,_,_,_,_) = (p,m,ql,dl,qr,dq)
 
@@ -408,9 +409,9 @@ module Circsim (benchmarkForCircuitSimulator) where
 
 
  acknowledge :: Signal a => Int -> [State a] -> Bool
- acknowledge d states = not (or (map (check_requests . outports) states1))
+ acknowledge d states = not (MyLib.or (map (check_requests . outports) states1))
      where
-	check_requests xs = or (map check_lr_requests xs)
+	check_requests xs = MyLib.or (map check_lr_requests xs)
 	check_lr_requests (p,m,ql,dl,qr,dr) = ql || qr
 	states1 = map (check_depth d) states
 
@@ -418,7 +419,7 @@ module Circsim (benchmarkForCircuitSimulator) where
 -- back into the inports and outports
 
  do_send :: Signal a => Int -> [State a] -> [State a]
- do_send d states = zipWith (update_io d) pss' states
+ do_send d states = MyLib.zipWith (update_io d) pss' states
      where
 	states1 = map (check_depth d) states
 	pss = (transpose . pad_packets) (map make_packet states1)
@@ -432,10 +433,10 @@ module Circsim (benchmarkForCircuitSimulator) where
  update_io :: Signal a => Int -> [(Packet a,Packet a)] -> State a -> State a
  update_io d lrps state = update_os (update_is state)
      where
-	update_is state = state { inports = foldr update_i
+	update_is state = state { inports = MyLib.foldr update_i
 						       (inports state) lrps }
 	update_os state = if pathDepth state == d
-			    then state { outports = zipWith update_o
+			    then state { outports = MyLib.zipWith update_o
 							lrps (outports state) }
 			    else state
 
@@ -484,8 +485,8 @@ module Circsim (benchmarkForCircuitSimulator) where
  pad_packets :: Signal a => [[Packet a]] -> [[Packet a]]
  pad_packets pss = map pad pss
      where
-	pad xs = take max_ps (xs ++ repeat emptyPacket)
-	max_ps = maximum (map length pss)
+	pad xs = MyLib.take max_ps (xs ++ MyLib.repeat emptyPacket)
+	max_ps = MyLib.maximum (map MyLib.length pss)
 
 -- Make all requests False that are not at depth "d"
 
@@ -533,7 +534,7 @@ module Circsim (benchmarkForCircuitSimulator) where
 
  store_inputs :: Signal a => [(Label,a)] -> State a -> State a
  store_inputs label_inputs state@(PS {compType=Inp})
-	= head [ update_outports state value
+	= MyLib.head [ update_outports state value
 			| ((label, input_pid), value) <- label_inputs,
 						pid state == input_pid ]
  store_inputs label_inputs state = state
@@ -554,7 +555,7 @@ module Circsim (benchmarkForCircuitSimulator) where
 
  critical_path_depth :: Signal a => Circuit a -> Int
  critical_path_depth (size, ins, outs, states)
-	= maximum (map pathDepth states)
+	= MyLib.maximum (map pathDepth states)
 
 --------------------------------------------------------------------------------
 -- Generate all possible input values
@@ -562,7 +563,7 @@ module Circsim (benchmarkForCircuitSimulator) where
  input_values :: Signal a => Int -> [[a]]
  input_values nbits = map binary [0..2^nbits-1]
      where
-	binary n = map int2sig (reverse (take nbits (bin n ++ repeat 0)))
+	binary n = map int2sig (MyLib.reverse (MyLib.take nbits (bin n ++ MyLib.repeat 0)))
 	int2sig s = if (s==0) then zeroS else one
 	bin 0 = []
 	bin n = r:bin q
@@ -589,11 +590,11 @@ module Circsim (benchmarkForCircuitSimulator) where
  regs bits = (size, is, os, states)
      where
 	size = 1+7*bits
-	is = ("sto",0): zipWith ilabel [0..] [ 7*x+1 | x <- [0..bits-1]]
+	is = ("sto",0): MyLib.zipWith ilabel [0..] [ 7*x+1 | x <- [0..bits-1]]
 	ilabel n pid = ("x" ++ show n, pid)
-	os = zipWith olabel [0..] [ 7*x+7 | x <- [0..bits-1]]
+	os = MyLib.zipWith olabel [0..] [ 7*x+7 | x <- [0..bits-1]]
 	olabel n pid = ("y" ++ show n, pid)
-	states = sto:concat (map (reg 0) [ 7*x+1 | x <- [0..bits-1]])
+	states = sto:MyLib.concat (map (reg 0) [ 7*x+1 | x <- [0..bits-1]])
 	sto = PS {	pid = 0,
 			compType  = Inp,
 			pathDepth = 0,
@@ -664,14 +665,14 @@ module Circsim (benchmarkForCircuitSimulator) where
  run num_bits num_cycles = circuit_simulate cycles example
 	where
 	example = pad_circuit (regs num_bits)
-	cycles = take num_cycles (repeat inputs)
-	inputs = take (num_bits + 1) (repeat T)
+	cycles = MyLib.take num_cycles (MyLib.repeat inputs)
+	inputs = MyLib.take (num_bits + 1) (MyLib.repeat T)
 
  benchmarkForCircuitSimulator :: Int -> Benchmark
  benchmarkForCircuitSimulator n = bench ("circuit_simulator " ++ show n) $ nf simulateCircuit n
   where
-    simulateCircuit cycles = circuit_simulate (replicate cycles inputs) example
+    simulateCircuit cycles = circuit_simulate (MyLib.replicate cycles inputs) example
       where
         numBits = 8
         example = pad_circuit (regs numBits)
-        inputs = take (numBits + 1) (repeat T)
+        inputs = MyLib.take (numBits + 1) (MyLib.repeat T)

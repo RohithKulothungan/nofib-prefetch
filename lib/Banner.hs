@@ -30,22 +30,32 @@
 ------------------------------------------------------------------------------
 module Banner (say) where
 import Data.Char ( isSpace, isDigit, isLower, isUpper )
-import Data.List
+import qualified Data.List as DL 
+import MyLib
+    ( (++),
+      map,
+      head,
+      foldr1,
+      repeat,
+      reverse,
+      (!!),
+      transpose,
+      unlines )
 
 ------------------------------------------------------------------------------
 
-say   = ('\n':) . unlines . map join . transpose . map picChar
-        where join  = foldr1 (\xs ys -> xs ++ "  " ++ ys)
+say   = ('\n':) . MyLib.unlines . map join . transpose . map picChar
+        where join  = MyLib.foldr1 (\xs ys -> xs ++ "  " ++ ys)
 
 -- mapping characters to letters: --------------------------------------------
 
-picChar c  | isUpper c  = alphas !! (fromEnum c - fromEnum 'A')
-           | isLower c  = alphas !! (fromEnum c - fromEnum 'a')
+picChar c  | isUpper c  = alphas MyLib.!! (fromEnum c - fromEnum 'A')
+           | isLower c  = alphas MyLib.!! (fromEnum c - fromEnum 'a')
            | isSpace c  = blank
-           | isDigit c  = digits !! (fromEnum c - fromEnum '0')
+           | isDigit c  = digits MyLib.!! (fromEnum c - fromEnum '0')
            | c=='/'     = slant
-           | c=='\\'    = reverse slant
-           | otherwise  = head ([ letter | (c',letter) <- punct, c'==c ]
+           | c=='\\'    = MyLib.reverse slant
+           | otherwise  = MyLib.head ([ letter | (c',letter) <- punct, c'==c ]
                                 ++ [nothing])
 
 -- letters data: -------------------------------------------------------------
@@ -54,7 +64,7 @@ blank  =  ["     ", "     ", "     ", "     ", "     "]
 
 slant  =  ["    ",  "   ",   "  ",    " ",     ""     ]
 
-nothing=  repeat ""
+nothing=  MyLib.repeat ""
 
 punct  =  [('.',  ["     ", "     ", "     ", "  .. ", "  .. "]),
            ('?',  [" ??? ", "?   ?", "   ? ", "  ?  ", "  .  "]),

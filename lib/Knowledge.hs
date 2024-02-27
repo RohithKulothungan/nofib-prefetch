@@ -10,7 +10,8 @@ into a table of definitions and for accessing the table.
 module Knowledge where
 import Result
 import Table
-import Data.List(nub)--1.3
+import MyLib ( nub )
+import qualified Data.List as DL
 
 -- The type `Phrase' is a tree-like data structure for storing sentences and
 -- phrases. A phrase is usually a term consisting of a word with a list of

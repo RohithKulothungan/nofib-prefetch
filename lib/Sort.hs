@@ -1,5 +1,6 @@
 module Sort(benchmarkSort, heapSort, insertSort, mergeSort, quickSort, quickSort2, quickerSort, treeSort, treeSort2) where
-import Data.List (partition, intersperse)
+import MyLib(partition, intersperse)
+import qualified Data.List as DL --1.3
 -- trying various sorts
 
 benchmarkSort :: ([String] -> [String]) -> String -> String

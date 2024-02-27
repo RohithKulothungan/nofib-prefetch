@@ -39,7 +39,8 @@ import Data.Bifunctor
 import Data.Tuple (swap)
 
 import Data.Tree
-import Data.List
+import MyLib
+import qualified Data.List as DL
 import Data.IntMap(IntMap)
 import Data.IntSet(IntSet)
 import qualified Data.IntMap.Strict as IM
@@ -77,7 +78,7 @@ pdom = ancestors . pdomTree
 -- Complexity as for @idom@.
 domTree :: Rooted -> Tree Node
 domTree a@(r,_) =
-  let is = filter ((/=r).fst) (idom a)
+  let is = MyLib.filter ((/=r).fst) (idom a)
       tg = fromEdges (fmap swap is)
   in asTree (r,tg)
 
@@ -85,7 +86,7 @@ domTree a@(r,_) =
 -- Complexity as for @idom@.
 pdomTree :: Rooted -> Tree Node
 pdomTree a@(r,_) =
-  let is = filter ((/=r).fst) (ipdom a)
+  let is = MyLib.filter ((/=r).fst) (ipdom a)
       tg = fromEdges (fmap swap is)
   in asTree (r,tg)
 
@@ -108,11 +109,11 @@ ipdom rg = runST (evalS idomM =<< initEnv (pruneReach (second predG rg)))
 
 -- | /Post-dominated depth-first search/.
 pddfs :: Rooted -> [Node]
-pddfs = reverse . rpddfs
+pddfs = MyLib.reverse . rpddfs
 
 -- | /Reverse post-dominated depth-first search/.
 rpddfs :: Rooted -> [Node]
-rpddfs = concat . levels . pdomTree
+rpddfs = MyLib.concat . levels . pdomTree
 
 -----------------------------------------------------------------------------
 
@@ -292,7 +293,7 @@ initEnv (r0,g0) = do
       m         = n+1
 
   let bucket = IM.fromList
-        (zip ns (repeat mempty))
+        (MyLib.zip ns (MyLib.repeat mempty))
 
   rna <- newI m
   writes rna (fmap swap
@@ -448,7 +449,7 @@ toAdj :: Graph -> [(Node, [Node])]
 toAdj = fmap (second IS.toList) . IM.toList
 
 toEdges :: Graph -> [Edge]
-toEdges = concatMap (uncurry (fmap . (,))) . toAdj
+toEdges = MyLib.concatMap (uncurry (fmap . (,))) . toAdj
 
 predG :: Graph -> Graph
 predG g = IM.unionWith IS.union (go g) g0
@@ -468,7 +469,7 @@ pruneReach (r,g) = (r,g2)
                 . flip IM.lookup g) $ r
         g2 = IM.fromList
             . fmap (second (IS.filter (`IS.member`is)))
-            . filter ((`IS.member`is) . fst)
+            . MyLib.filter ((`IS.member`is) . fst)
             . IM.toList $ g
 
 tip :: Tree a -> (a, [Tree a])
@@ -476,20 +477,20 @@ tip (Node a ts) = (a, ts)
 
 parents :: Tree a -> [(a, a)]
 parents (Node i xs) = p i xs
-        ++ concatMap parents xs
+        ++ MyLib.concatMap parents xs
   where p i = fmap (flip (,) i . rootLabel)
 
 ancestors :: Tree a -> [(a, [a])]
 ancestors = go []
   where go acc (Node i xs)
           = let acc' = i:acc
-            in p acc' xs ++ concatMap (go acc') xs
+            in p acc' xs ++ MyLib.concatMap (go acc') xs
         p is = fmap (flip (,) is . rootLabel)
 
 asGraph :: Tree Node -> Rooted
 asGraph t@(Node a _) = let g = go t in (a, fromAdj g)
-  where go (Node a ts) = let as = (fst . unzip . fmap tip) ts
-                          in (a, as) : concatMap go ts
+  where go (Node a ts) = let as = (fst . MyLib.unzip . fmap tip) ts
+                          in (a, as) : MyLib.concatMap go ts
 
 asTree :: Rooted -> Tree Node
 asTree (r,g) = let go a = Node a (fmap go ((IS.toList . f) a))

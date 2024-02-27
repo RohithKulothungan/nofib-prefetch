@@ -5,7 +5,8 @@
 module Constraints (runSolver, bt, bm, bjbt, fc) where
 
 import Prelude hiding (Maybe(Just,Nothing))
-import Data.List
+import MyLib
+import qualified Data.List as DL --1.3
 import System.Environment
 import Control.Monad (forM_)
 
@@ -54,13 +55,13 @@ generate CSP{vals=vals,vars=vars} = g vars
         g var = [ (var := val):st | val <- [1..vals], st <- g (var-1) ]
 
 inconsistencies :: CSP -> State -> [(Var,Var)]
-inconsistencies CSP{rel=rel} as =  [ (level a, level b) | a <- as, b <- reverse as, a > b, not (rel a b) ]
+inconsistencies CSP{rel=rel} as =  [ (level a, level b) | a <- as, b <- MyLib.reverse as, a > b, not (rel a b) ]
 
 consistent :: CSP -> State -> Bool
-consistent csp = null . (inconsistencies csp)
+consistent csp = MyLib.null . (inconsistencies csp)
 
 test :: CSP -> [State] -> [State]
-test csp = filter (consistent csp)
+test csp = MyLib.filter (consistent csp)
 
 solver :: CSP -> [State]
 solver csp  = test csp candidates
@@ -89,14 +90,14 @@ foldTree f (Node a cs) = f a (map (foldTree f) cs)
 
 filterTree :: (a -> Bool) -> Transform a a
 filterTree p = foldTree f
-  where f a cs = Node a (filter (p . label) cs)
+  where f a cs = Node a (MyLib.filter (p . label) cs)
 
 prune :: (a -> Bool) -> Transform a a
 prune p = filterTree (not . p)
 
 leaves :: Tree a -> [a]
 leaves (Node leaf []) = [leaf]
-leaves (Node _ cs) = concat (map leaves cs)
+leaves (Node _ cs) = MyLib.concat (map leaves cs)
 
 initTree :: (a -> [a]) -> a -> Tree a
 initTree f a = Node a (map (initTree f) (f a))
@@ -114,7 +115,7 @@ data Maybe a = Just a | Nothing deriving Eq
 earliestInconsistency :: CSP -> State -> Maybe (Var,Var)
 earliestInconsistency CSP{rel=rel} [] = Nothing
 earliestInconsistency CSP{rel=rel} (a:as) =
-        case filter (not . rel a) (reverse as) of
+        case MyLib.filter (not . rel a) (MyLib.reverse as) of
           [] -> Nothing
           (b:_) -> Just (level a, level b)
 
@@ -124,7 +125,7 @@ labelInconsistencies csp = mapTree f
 
 btsolver0 :: CSP -> [State]
 btsolver0 csp =
-  (filter (complete csp) . leaves . (mapTree fst) . prune ((/= Nothing) . snd)
+  (MyLib.filter (complete csp) . leaves . (mapTree fst) . prune ((/= Nothing) . snd)
                                             . (labelInconsistencies csp) .  mkTree) csp
 
 -----------------------------------------------
@@ -148,7 +149,7 @@ type Labeler = CSP -> Transform State (State, ConflictSet)
 
 search :: Labeler -> CSP -> [State]
 search labeler csp =
-  (map fst . filter (knownSolution . snd) . leaves . prune (knownConflict . snd) . labeler csp . mkTree) csp
+  (map fst . MyLib.filter (knownSolution . snd) . leaves . prune (knownConflict . snd) . labeler csp . mkTree) csp
 
 bt :: Labeler
 bt csp = mapTree f
@@ -165,7 +166,7 @@ btsolver = search bt
 -------------------------------------
 
 hrandom :: Int -> Transform a a
-hrandom seed (Node a cs) = Node a (randomList seed' (zipWith hrandom (randoms seed') cs))
+hrandom seed (Node a cs) = Node a (randomList seed' (MyLib.zipWith hrandom (randoms seed') cs))
   where seed' = random seed
 
 btr :: Int -> Labeler
@@ -182,7 +183,7 @@ random2 n = if test > 0 then test else test + 2147483647
         lo   = n `rem` 127773
 
 randoms :: Int -> [Int]
-randoms = iterate random2
+randoms = MyLib.iterate random2
 
 random :: Int -> Int
 random n = (a * n + c) -- mod m
@@ -190,7 +191,7 @@ random n = (a * n + c) -- mod m
         c = a
 
 randomList :: Int -> [a] -> [a]
-randomList i as = map snd (sortBy (\(a,b) (c,d) -> compare a c) (zip (randoms i) as))
+randomList i as = map snd (sortBy (\(a,b) (c,d) -> compare a c) (MyLib.zip (randoms i) as))
 
 -------------------------
 -- Figure 8. Backmarking.
@@ -207,12 +208,12 @@ emptyTable CSP{vars=vars,vals=vals} = []:[[Unknown | m <- [1..vals]] | n <- [1..
 
 cacheChecks :: CSP -> Table -> Transform State (State, Table)
 cacheChecks csp tbl (Node s cs) =
-  Node (s, tbl) (map (cacheChecks csp (fillTable s csp (tail tbl))) cs)
+  Node (s, tbl) (map (cacheChecks csp (fillTable s csp (MyLib.tail tbl))) cs)
 
 fillTable :: State -> CSP -> Table -> Table
 fillTable [] csp tbl = tbl
 fillTable ((var' := val'):as) CSP{vars=vars,vals=vals,rel=rel} tbl =
-    zipWith (zipWith f) tbl [[(var,val) | val <- [1..vals]] | var <- [var'+1..vars]]
+    MyLib.zipWith (MyLib.zipWith f) tbl [[(var,val) | val <- [1..vals]] | var <- [var'+1..vars]]
           where f cs (var,val) = if cs == Unknown && not (rel (var' := val') (var := val)) then
                                    Known [var',var]
                                  else cs
@@ -222,7 +223,7 @@ lookupCache csp t = mapTree f t
   where f ([], tbl)      = (([], Unknown), tbl)
         f (s@(a:_), tbl) = ((s, cs), tbl)
 	     where cs = if tableEntry == Unknown then checkComplete csp s else tableEntry
-                   tableEntry = (head tbl)!!(value a-1)
+                   tableEntry = (MyLib.head tbl)MyLib.!!(value a-1)
 
 --------------------------------------------
 -- Figure 10. Conflict-directed backjumping.
@@ -243,7 +244,7 @@ bj csp = foldTree f
 combine :: [(State, ConflictSet)] -> [Var] -> [Var]
 combine []                 acc = acc
 combine ((s, Known cs):css) acc =
-  if maxLevel s `notElem` cs then cs else combine css (cs `union` acc)
+  if maxLevel s `MyLib.notElem` cs then cs else combine css (cs `union` acc)
 
 bj' :: CSP -> Transform (State, ConflictSet) (State, ConflictSet)
 bj' csp = foldTree f
@@ -265,8 +266,8 @@ collect (Known cs:css) = cs `union` (collect css)
 domainWipeOut :: CSP -> Transform ((State, ConflictSet), Table) (State, ConflictSet)
 domainWipeOut CSP{vars=vars} t = mapTree f t
   where f ((as, cs), tbl) = (as, cs')
-          where wipedDomains = ([vs | vs <- tbl, all (knownConflict) vs])
-                cs' = if null wipedDomains then cs else Known (collect (head wipedDomains))
+          where wipedDomains = ([vs | vs <- tbl, MyLib.all (knownConflict) vs])
+                cs' = if MyLib.null wipedDomains then cs else Known (collect (MyLib.head wipedDomains))
 
 
 runSolver :: Labeler -> IO ()
@@ -274,4 +275,4 @@ runSolver algorithm = do
   let n = 8
   let csp = queens n
   let solutions = search algorithm csp
-  print (length solutions)
+  print (MyLib.length solutions)

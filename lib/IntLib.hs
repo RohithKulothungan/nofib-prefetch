@@ -8,7 +8,9 @@ module IntLib (
     log2
 ) where
 
-import Data.List
+
+import MyLib ( genericLength )
+import qualified Data.List as DL
 
 -- Reading and Writing
 readInteger :: String -> Integer

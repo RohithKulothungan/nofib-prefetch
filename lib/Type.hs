@@ -8,7 +8,8 @@ module Type
 import Parse
 import Shows
 import MyList
-import Data.List(nub)--1.3
+import MyLib(nub)
+import qualified Data.List as DL --1.3
 
 type  TVarId          =  String
 type  TConId          =  String

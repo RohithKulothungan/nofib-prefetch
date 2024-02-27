@@ -6,7 +6,8 @@ import Preds
 import Solve
 import Geometric
 import Cross
-import Data.List(nub)--1.3
+import MyLib(nub)
+import qualified Data.List as DL --1.3
 -- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -- section 8: Comparing
 

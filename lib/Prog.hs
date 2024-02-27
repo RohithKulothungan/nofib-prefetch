@@ -8,7 +8,8 @@ module Prog(prog) where
 --partain:import Libfuns
 import Auxil
 import Key
-import Data.List (intersperse)
+import MyLib (intersperse)
+import qualified Data.List as DL
 
 prog :: Int -> String
 prog n = show (cichelli n)

@@ -6,8 +6,8 @@ import Interact
 import Subst
 import Engine
 import Version
-import Data.List(nub)--1.3
-
+import MyLib(nub)
+import qualified Data.List as DL --1.3
 import Control.Monad
 import System.Environment
 import System.IO.Error (catchIOError)

@@ -3,7 +3,8 @@
 module NofibUtils where
 
 import Data.Char (ord)
-import Data.List (foldl')
+import MyListLib ( foldl' )
+import qualified Data.List as DL
 
 import System.Environment (getArgs)
 

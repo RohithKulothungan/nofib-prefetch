@@ -17,7 +17,8 @@ module Cryptarithm2(runCryptarithmSolver) where
 import Control.Monad
 import Control.Monad.Trans.State
 import Control.Monad.Trans.Class
-import Data.List
+import MyLib
+import qualified Data.List as DL
 import Data.Maybe
 import System.Environment
 
@@ -63,7 +64,7 @@ permute c =
 select :: Char -> DigitState Int
 select c =
      do st <- get
-	case lookup c (digitEnv st) of
+	case MyLib.lookup c (digitEnv st) of
 	  Just r -> return r
 	  Nothing -> permute c
 
@@ -84,7 +85,7 @@ solve tops (bot:bots) carry =
 		   [] -> return carry
 		   (top:_) ->
 		     do topNS <- mapM select top
-	     	        return (sum topNS + carry))
+	     	        return (MyLib.sum topNS + carry))
      botN <- select bot
      guard (topN `mod` 10 == botN)	-- key optimization
      solve (rest tops) bots (topN `div` 10)
@@ -99,25 +100,25 @@ solve _  _  _ = mzero
 
 puzzle :: [[Char]] -> [Char] -> String
 puzzle top bot =
-	     if length (nub (concat top ++ bot)) > 10
+	     if MyLib.length (nub (MyLib.concat top ++ bot)) > 10
 	     then error "can not map more than 10 chars"
 	else if topVal /= botVal
 	     then error ("Internal Error")
-	else unlines [ [c] ++ " => " ++ show i |
+	else MyLib.unlines [ [c] ++ " => " ++ show i |
 			(c,i) <- digitEnv answer
 		   ]
    where
-	solution = solve (transpose (map reverse top))
-			 (reverse bot)
+	solution = solve (transpose (map MyLib.reverse top))
+			 (MyLib.reverse bot)
 			 0
 	answer  = case (execStateT solution initState) of
 		     (a:_) -> a
 		     [] -> error "can not find a solution"
 	env    = digitEnv answer
-	look c = fromJust (lookup c env)
-	topVal = sum [expand xs | xs <- top]
+	look c = fromJust (MyLib.lookup c env)
+	topVal = MyLib.sum [expand xs | xs <- top]
 	botVal = expand bot
-	expand = foldl (\ a b -> a * 10 + look b) 0
+	expand = MyLib.foldl (\ a b -> a * 10 + look b) 0
 
 runCryptarithmSolver :: IO ()
 runCryptarithmSolver = do

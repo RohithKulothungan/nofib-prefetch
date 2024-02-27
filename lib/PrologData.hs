@@ -11,7 +11,8 @@ module PrologData(Id, Atom, Term(..), term, termlist, varsIn,
                   Database, emptyDb, renClauses, addClause, Parser ) where
 
 import ParseProlog
-import Data.List(nub)--1.3
+import MyLib(nub)
+import qualified Data.List as DL --1.3
 import Data.Char(isAlpha,isDigit,isUpper)
 
 infix 6 :==

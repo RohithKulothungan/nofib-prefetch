@@ -2,7 +2,8 @@ module Solution (solve) where
 
 import Board
 import Move
-import Data.List (sortBy)
+import MyLib(sortBy)
+import qualified Data.List as DL --1.3
 
 solve :: Board -> Colour -> Int -> String
 solve bd c n = showResult (solution bd c (2*n-1))
