@@ -56,6 +56,7 @@ import NofibUtils
 import InferMain
 import PrologMain
 import PrimeMain
+import PrefetchBA
 
 competitors i =
   [ ("Simon",[35,27,40,i,34,21])

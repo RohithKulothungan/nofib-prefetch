@@ -58,7 +58,7 @@ library
     import:           warnings
 
     -- Modules exported by the library.
-    exposed-modules:  MyLib, Awards, QSort, Banner, Calendar, Key, Auxil, Prog, Circsim, Constraints, Cryptarithm2, Dom, Expert, Result, Search, Table, Knowledge, Match, Mate, Move, Board, Problem, Solution, Sort, Numbers, Vectors, Hide, EdgePlate, Postscript, MyIO, NofibUtils, Comparing, Cross, Geometric, Matrices, Memo, Preds, Rotate, Solve, InferMain, Environment, FiniteMap, Infer, InferMonad, MaybeM, MyList, Parse, Shows, StateX, Substitution, Term, Type, ParseProlog, PrologMain, Engine, Interact, PrologData, PureEngine, StackEngine, Subst, Version, MyRandom, IntLib, Prime, PrimeMain
+    exposed-modules:  MyByteString, MyLib, Awards, QSort, Banner, Calendar, Key, Auxil, Prog, Circsim, Constraints, Cryptarithm2, Dom, Expert, Result, Search, Table, Knowledge, Match, Mate, Move, Board, Problem, Solution, Sort, Numbers, Vectors, Hide, EdgePlate, Postscript, MyIO, NofibUtils, Comparing, Cross, Geometric, Matrices, Memo, Preds, Rotate, Solve, InferMain, Environment, FiniteMap, Infer, InferMonad, MaybeM, MyList, Parse, Shows, StateX, Substitution, Term, Type, ParseProlog, PrologMain, Engine, Interact, PrologData, PureEngine, StackEngine, Subst, Version, MyRandom, IntLib, Prime, PrimeMain, PrefetchBA
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -67,10 +67,34 @@ library
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:  base ^>=4.17.2.1, criterion, deepseq, transformers, containers, array, criterion-measurement
+    build-depends:  base ^>=4.17.2.1, criterion, deepseq, transformers, containers, array, criterion-measurement, ghc-prim, bytestring == 0.11.5.3
 
     -- Directories containing source files.
     hs-source-dirs:   lib
+
+    -- Base language which the package is written in.
+    default-language: Haskell2010
+
+executable prefetch-byteArray
+    -- Import common warning flags.
+    import:           warnings
+
+    -- .hs or .lhs file containing the Main module.
+    main-is:          ByteArray3.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+
+    -- Other library packages from which modules are imported.
+    build-depends:
+        base ^>=4.17.2.1,
+        nofib-prefetch, criterion, deepseq, transformers, criterion-measurement, ghc-prim, primitive, bytestring == 0.11.5.3, bytestring
+
+    -- Directories containing source files.
+    hs-source-dirs:   app
 
     -- Base language which the package is written in.
     default-language: Haskell2010
@@ -91,7 +115,7 @@ executable nofib-prefetch
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.17.2.1,
-        nofib-prefetch, criterion, deepseq, transformers, criterion-measurement
+        nofib-prefetch, criterion, deepseq, transformers, criterion-measurement, ghc-prim, bytestring == 0.11.5.3
 
     -- Directories containing source files.
     hs-source-dirs:   app
@@ -124,11 +148,11 @@ test-suite nofib-prefetch-test
     -- Test dependencies.
     build-depends:
         base ^>=4.17.2.1,
-        nofib-prefetch, criterion, deepseq, transformers, criterion-measurement
+        nofib-prefetch, criterion, deepseq, transformers, criterion-measurement, ghc-prim, bytestring == 0.11.5.3
 
 benchmark my-benchmark
   type:                  exitcode-stdio-1.0
   main-is:               Main.hs
   hs-source-dirs:        app
-  build-depends:         base, criterion, nofib-prefetch, deepseq, transformers, criterion-measurement
+  build-depends:         base, criterion, nofib-prefetch, deepseq, transformers, criterion-measurement, ghc-prim,bytestring, bytestring == 0.11.5.3
   default-language:      Haskell2010

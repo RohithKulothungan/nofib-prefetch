@@ -50,6 +50,16 @@
   (major1) == 1 && (major2) <  4 || \
   (major1) == 1 && (major2) == 4 && (minor) <= 8)
 #endif /* MIN_VERSION_deepseq */
+/* package ghc-prim-0.9.1 */
+#ifndef VERSION_ghc_prim
+#define VERSION_ghc_prim "0.9.1"
+#endif /* VERSION_ghc_prim */
+#ifndef MIN_VERSION_ghc_prim
+#define MIN_VERSION_ghc_prim(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  9 || \
+  (major1) == 0 && (major2) == 9 && (minor) <= 1)
+#endif /* MIN_VERSION_ghc_prim */
 /* package nofib-prefetch-0.1.0.0 */
 #ifndef VERSION_nofib_prefetch
 #define VERSION_nofib_prefetch "0.1.0.0"
