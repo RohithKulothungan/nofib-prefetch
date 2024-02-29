@@ -6,6 +6,9 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE UnboxedTuples #-}
+
 
 module MyByteString where
 
@@ -29,7 +32,12 @@ import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable         (Storable(..))
 import MyInternalTypes
-import GHC.Prim
+import GHC.IO
+import GHC.Ptr
+import GHC.Exts
+
+prefetchPtr3 :: Ptr a -> Int -> IO ()
+prefetchPtr3 (Ptr addr) (I# i) = IO (\s -> (# prefetchAddr3# addr i s , () #))
 
 unpack :: ByteString -> [Char]
 unpack = unpackChars
@@ -63,5 +71,5 @@ sort (BS input l)
               | otherwise = do k <- fromIntegral `fmap` peekElemOff str i
                                x <- peekElemOff counts k
                                pokeElemOff counts k (x + 1)
-                               -- Inserting prefetch hint
+                               -- prefetchPtr3 str i
                                go (i + 1)
