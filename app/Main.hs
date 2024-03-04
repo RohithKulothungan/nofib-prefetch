@@ -127,7 +127,7 @@ main = do
     --         MyIO.process (\viewdir -> Hide.hiddenline viewdir . map read . lines)) (lines ls)
     input_infer <- readFile "lib/infer.stdin"
     defaultMainWith(defaultConfig {reportFile = Just ("Inference-benchmark.html")})[ bench "Benchmarking inference" $ nfIO (replicateM_ 200 $ InferMain.doInference input_infer)]
-    defaultMainWith(defaultConfig {reportFile = Just ("Interpreter-benchmark.html")})[ bench "interpreter" $ nfIO PrologMain.runInterpreter]
+    -- defaultMainWith(defaultConfig {reportFile = Just ("Interpreter-benchmark.html")})[ bench "interpreter" $ nfIO PrologMain.runInterpreter]
     defaultMainWith(defaultConfig {reportFile = Just ("Sort-benchmark.html")}) [bgroup "sortBenchmarks" [
                     bench "heapSort" $ nf (Sort.benchmarkSort Sort.heapSort) input
                   , bench "insertSort" $ nf (Sort.benchmarkSort Sort.insertSort) input

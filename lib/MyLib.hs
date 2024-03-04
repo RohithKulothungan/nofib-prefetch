@@ -1,6 +1,7 @@
 {-# LANGUAGE Trustworthy #-}
 {-# LANGUAGE CPP, NoImplicitPrelude, ScopedTypeVariables,
              MagicHash, BangPatterns #-}
+{-# LANGUAGE UnboxedTuples #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -221,6 +222,9 @@ import GHC.Num
 import GHC.Real
 import MyListLib
 import GHC.Base
+import Myprefetch
+import Control.Monad (mapM_)
+
 
 infix 5 \\ -- comment to fool cpp: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/phases.html#cpp-and-string-gaps
 
@@ -805,6 +809,8 @@ transpose ((x : xs) : xss) = combine x hds xs tls
     -- unzip makes the selector thunk arrangements we need to
     -- ensure everything gets cleaned up properly.
     (hds, tls) = unzip [(hd, tl) | hd : tl <- xss]
+    -- prefetchTails :: IO ()
+    -- prefetchTails = mapM_ (\tl -> prefetchElem3 tl 0) tls
     combine y h ys t = (y:h) : transpose (ys:t)
     {-# NOINLINE combine #-}
   {- Implementation note:

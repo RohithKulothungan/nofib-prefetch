@@ -58,7 +58,7 @@ library
     import:           warnings
 
     -- Modules exported by the library.
-    exposed-modules:  MyListLib, MyPrim, MyInternalTypes, MyByteString, MyLib, Awards, QSort, Banner, Calendar, Key, Auxil, Prog, Circsim, Constraints, Cryptarithm2, Dom, Expert, Result, Search, Table, Knowledge, Match, Mate, Move, Board, Problem, Solution, Sort, Numbers, Vectors, Hide, EdgePlate, Postscript, MyIO, NofibUtils, Comparing, Cross, Geometric, Matrices, Memo, Preds, Rotate, Solve, InferMain, Environment, FiniteMap, Infer, InferMonad, MaybeM, MyList, Parse, Shows, StateX, Substitution, Term, Type, ParseProlog, PrologMain, Engine, Interact, PrologData, PureEngine, StackEngine, Subst, Version, MyRandom, IntLib, Prime, PrimeMain, PrefetchBA
+    exposed-modules: Myprefetch, MyListLib, MyPrim, MyInternalTypes, MyByteString, MyLib, Awards, QSort, Banner, Calendar, Key, Auxil, Prog, Circsim, Constraints, Cryptarithm2, Dom, Expert, Result, Search, Table, Knowledge, Match, Mate, Move, Board, Problem, Solution, Sort, Numbers, Vectors, Hide, EdgePlate, Postscript, MyIO, NofibUtils, Comparing, Cross, Geometric, Matrices, Memo, Preds, Rotate, Solve, InferMain, Environment, FiniteMap, Infer, InferMonad, MaybeM, MyList, Parse, Shows, StateX, Substitution, Term, Type, ParseProlog, PrologMain, Engine, Interact, PrologData, PureEngine, StackEngine, Subst, Version, MyRandom, IntLib, Prime, PrimeMain, PrefetchBA
 
     -- Modules included in this library but not exported.
     -- other-modules:
