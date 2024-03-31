@@ -84,26 +84,26 @@ main :: IO ()
 main = do
     defaultMainWith(defaultConfig {reportFile = Just ("findallawards-benchmark.html")})[ bgroup "findallawards" [benchmarkFunction i | i <- [1..3]] ]
     let stuff = "Hello world \n this is a test string \n 123243255345 \n file writing"
-    defaultMainWith(defaultConfig {reportFile = Just ("Banner-benchmark.html")}) [bench "Banner Say" $ nf (map (Banner.say) . lines) stuff]
-    defaultMainWith(defaultConfig {reportFile = Just ("Calendar-benchmark.html")}) [ bgroup "calendar"
+    defaultMainWith(defaultConfig {reportFile = Just ("Banner-prefetch2-benchmark.html")}) [bench "Banner Say" $ nf (map (Banner.say) . lines) stuff]
+    defaultMainWith(defaultConfig {reportFile = Just ("Calendar-prefetch-benchmark.html")}) [ bgroup "calendar"
                                                                                         [ bench "calendar" $ nf (length . Calendar.calendar) 2022
                                                                                         , bench "cal" $ nf (length . Calendar.cal) 2022
                                                                                         ]
                                                                                     ]
-    defaultMainWith(defaultConfig {reportFile = Just ("Cichelli-benchmark.html")}) [bgroup "Cichelli" [benchmarkForCichelli (3)]]
-    defaultMainWith(defaultConfig {reportFile = Just ("Circuit-Simulator-benchmark.html")}) [bgroup "Circuit Simulator" [Circsim.benchmarkForCircuitSimulator 1000]]
-    defaultMainWith(defaultConfig {reportFile = Just ("CSP-benchmark.html")}) [ bgroup "CSP Benchmarks"
+    defaultMainWith(defaultConfig {reportFile = Just ("Cichelli-prefetch-benchmark.html")}) [bgroup "Cichelli" [benchmarkForCichelli (3)]]
+    defaultMainWith(defaultConfig {reportFile = Just ("Circuit-Simulator-prefetch-benchmark.html")}) [bgroup "Circuit Simulator" [Circsim.benchmarkForCircuitSimulator 1000]]
+    defaultMainWith(defaultConfig {reportFile = Just ("CSP-prefetch-benchmark.html")}) [ bgroup "CSP Benchmarks"
                                                                                   [ bench "Backtracking" $ nfIO (Constraints.runSolver Constraints.bt)
                                                                                   , bench "Backmarking" $ nfIO (Constraints.runSolver Constraints.bm)
                                                                                   , bench "Backjumping" $ nfIO (Constraints.runSolver Constraints.bjbt)
                                                                                   , bench "Forward Checking" $ nfIO (Constraints.runSolver Constraints.fc)
                                                                                   ]
                                                                                 ]
-    defaultMainWith(defaultConfig {reportFile = Just ("Cryptarithm-benchmark.html")})[ bench "Cryptarithm Solver" $ nfIO Cryptarithm2.runCryptarithmSolver]
-    defaultMainWith(defaultConfig {reportFile = Just ("Compute-Dominators-benchmark.html")})[ bench "Compute Dominators" $ nfIO (runDominatorBenchmark "lib/ghc-examples.in")]
+    defaultMainWith(defaultConfig {reportFile = Just ("Cryptarithm-prefetch-benchmark.html")})[ bench "Cryptarithm Solver" $ nfIO Cryptarithm2.runCryptarithmSolver]
+    defaultMainWith(defaultConfig {reportFile = Just ("Compute-Dominators-prefetch-benchmark.html")})[ bench "Compute Dominators" $ nfIO (runDominatorBenchmark "lib/ghc-examples.in")]
     animals <- readFile "lib/runtime_files_expert/animals"
     contents <- readFile "lib/runtime_files_expert/expert"
-    defaultMainWith(defaultConfig {reportFile = Just ("Mate-benchmark.html")})
+    defaultMainWith(defaultConfig {reportFile = Just ("Mate-prefetch-benchmark.html")})
                                                                               [ bench "process Mate" $ nfIO $
                                                                                   forM_ [1..999] $ \i ->
                                                                                       print
@@ -113,10 +113,10 @@ main = do
                                                                                       $ contents
                                                                               ]
     let files = ["lib/runtime_files_mate/heathcote3.prob"]  -- Add your file name here or modify the list as needed
-    defaultMainWith(defaultConfig {reportFile = Just ("Mate-benchmark.html")}) (map (\file -> bench file $ whnfIO (Mate.mateInN file)) files)
+    defaultMainWith(defaultConfig {reportFile = Just ("Mate-prefetch-benchmark.html")}) (map (\file -> bench file $ whnfIO (Mate.mateInN file)) files)
     cts <- readFile "lib/primetest.stdin"
     let inputLines = lines cts
-    let benchmark =  defaultMainWith(defaultConfig {reportFile = Just ("PrimeTest-benchmark.html")})[ bench "process primetest" $ whnf PrimeMain.process inputLines] 
+    let benchmark =  defaultMainWith(defaultConfig {reportFile = Just ("PrimeTest-prefetch-benchmark.html")})[ bench "process primetest" $ whnf PrimeMain.process inputLines] 
     _ <- benchmark
     mapM_ putStr (PrimeMain.process inputLines)
     -- let inputHidden = "2,10,3\nquit\n"
@@ -126,9 +126,9 @@ main = do
     --     (getFilename $
     --         MyIO.process (\viewdir -> Hide.hiddenline viewdir . map read . lines)) (lines ls)
     input_infer <- readFile "lib/infer.stdin"
-    defaultMainWith(defaultConfig {reportFile = Just ("Inference-benchmark.html")})[ bench "Benchmarking inference" $ nfIO (replicateM_ 200 $ InferMain.doInference input_infer)]
+    defaultMainWith(defaultConfig {reportFile = Just ("Inference-prefetch-benchmark.html")})[ bench "Benchmarking inference" $ nfIO (replicateM_ 200 $ InferMain.doInference input_infer)]
     -- defaultMainWith(defaultConfig {reportFile = Just ("Interpreter-benchmark.html")})[ bench "interpreter" $ nfIO PrologMain.runInterpreter]
-    defaultMainWith(defaultConfig {reportFile = Just ("Sort-benchmark.html")}) [bgroup "sortBenchmarks" [
+    defaultMainWith(defaultConfig {reportFile = Just ("Sort-prefetch-benchmark.html")}) [bgroup "sortBenchmarks" [
                     bench "heapSort" $ nf (Sort.benchmarkSort Sort.heapSort) input
                   , bench "insertSort" $ nf (Sort.benchmarkSort Sort.insertSort) input
                   , bench "mergeSort" $ nf (Sort.benchmarkSort Sort.mergeSort) input

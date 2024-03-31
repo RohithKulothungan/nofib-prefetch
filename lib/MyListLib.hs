@@ -46,6 +46,7 @@ import GHC.Base
 import GHC.Num (Num(..))
 import GHC.Num.Integer (Integer)
 import GHC.Stack.Types (HasCallStack)
+import Myprefetch
 
 infixl 9  !?, !!
 infix  4 `elem`, `notElem`

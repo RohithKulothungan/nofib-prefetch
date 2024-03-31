@@ -224,6 +224,7 @@ import MyListLib
 import GHC.Base
 import Myprefetch
 import Control.Monad (mapM_)
+import System.IO.Unsafe (unsafePerformIO)
 
 
 infix 5 \\ -- comment to fool cpp: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/phases.html#cpp-and-string-gaps
@@ -802,17 +803,32 @@ intercalate xs xss = concat (intersperse xs xss)
 transpose :: [[a]] -> [[a]]
 transpose [] = []
 transpose ([] : xss) = transpose xss
-transpose ((x : xs) : xss) = combine x hds xs tls
+transpose ((x : xs) : xss) = prefetchTails `seq` combine x hds xs tls
   where
     -- We tie the calculations of heads and tails together
     -- to prevent heads from leaking into tails and vice versa.
     -- unzip makes the selector thunk arrangements we need to
     -- ensure everything gets cleaned up properly.
     (hds, tls) = unzip [(hd, tl) | hd : tl <- xss]
-    -- prefetchTails :: IO ()
-    -- prefetchTails = mapM_ (\tl -> prefetchElem3 tl 0) tls
+    prefetchTails :: ()
+    prefetchTails = unsafePerformIO (mapM_ (\hds -> prefetchElem3 hds 0) tls)
     combine y h ys t = (y:h) : transpose (ys:t)
     {-# NOINLINE combine #-}
+
+-- transpose :: [[a]] -> [[a]]
+-- transpose [] = []
+-- transpose ([] : xss) = transpose xss
+-- transpose ((x : xs) : xss) = combine x hds xs tls
+--   where
+--     -- We tie the calculations of heads and tails together
+--     -- to prevent heads from leaking into tails and vice versa.
+--     -- unzip makes the selector thunk arrangements we need to
+--     -- ensure everything gets cleaned up properly.
+--     (hds, tls) = unzip [(hd, tl) | hd : tl <- xss]
+--     -- prefetchTails :: IO ()
+--     -- prefetchTails = mapM_ (\tl -> prefetchElem3 tl 0) tls
+--     combine y h ys t = (y:h) : transpose (ys:t)
+    -- {-# NOINLINE combine #-}
   {- Implementation note:
   If the bottom part of the function was written as such:
 
